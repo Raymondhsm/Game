@@ -150,8 +150,6 @@ public class FPPController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isGround) Debug.Log("Ground");
-        else Debug.Log("Air");
         if (input.Jump)
         {
             if (canWallJump) //防止一帧两种跳同时发生  !_isGround &&

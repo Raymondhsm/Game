@@ -510,8 +510,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openDoorAnim: {fileID: 1928096002}
-  closeDoorAnim: {fileID: 0}
   CameraMoveAnim: {fileID: 915605848}
+  door: {fileID: 1928096000}
 --- !u!4 &349427083
 Transform:
   m_ObjectHideFlags: 0
@@ -1622,6 +1622,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8943477562486423382, guid: acd6ecd418b8fa44baef713fa780228e,
+        type: 3}
+      propertyPath: m_Name
+      value: glass_panel_enter_door
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8943477562479088674, guid: acd6ecd418b8fa44baef713fa780228e, type: 3}
