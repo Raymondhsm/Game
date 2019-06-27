@@ -6,47 +6,67 @@ using System.Linq;
 
 public class FileRW : MonoBehaviour
 {
+    public enum Type {
+        R,
+        W,
+        RW
+    }
 
-    void Start()
+    private FileInfo fileInfo;
+    private bool isExist;
+    private Type type;
+    private string filePath;
+    private string fileName;
+
+    public FileRW(string filePath,string fileName, Type t)
     {
-        string str = "hello wor";
-        OverWriteFileByLine(Application.dataPath,"filetest",str);
-        Debug.Log(Application.dataPath);
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.type = t;
+
+        fileInfo = new FileInfo (filePath + fileName);
+        
+        switch(t){
+            case Type.R:
+                isExist = fileInfo.Exists;
+                break;
+            case Type.W:
+            case Type.RW:
+                if(!fileInfo.Exists)  
+                    fileInfo.CreateText();//创建一个用于写入 UTF-8 编码的文本  
+                break;
+        }
+    }
+
+    ~FileRW()
+    {
         
     }
 
-    public void WriteFileByLine(string filePath,string fileName,string strInfo)  
+    public void WriteFileByLine(string strInfo)  
     { 
+        if(type == Type.R){
+            Debug.LogError("The Write Operation is Limited");
+            return;
+        }
+
         StreamWriter sw;  
-        FileInfo file_info = new FileInfo (filePath+"//"+fileName);  
-        if(!file_info.Exists)  
-        {  
-            sw=file_info.CreateText();//创建一个用于写入 UTF-8 编码的文本  
-            Debug.Log("文件创建成功！");  
-        }  
-        else  
-        {  
-            sw=file_info.AppendText();//打开现有 UTF-8 编码文本文件以进行读取  
-        }  
+        sw = fileInfo.AppendText();
         sw.WriteLine(strInfo);  
         sw.Close ();  
         sw.Dispose ();//文件流释放  
     }  
 
 
-    public void WriteFileByLine(string filePath,string fileName,List<string> strInfo)  
+    public void WriteFileByLine(List<string> strInfo)  
     { 
-        StreamWriter sw;  
-        FileInfo file_info = new FileInfo (filePath+"//"+fileName);  
-        if(!file_info.Exists)  
-        {  
-            sw=file_info.CreateText();//创建一个用于写入 UTF-8 编码的文本  
-            Debug.Log("文件创建成功！");  
-        }  
-        else  
-        {  
-            sw=file_info.AppendText();//打开现有 UTF-8 编码文本文件以进行读取  
+        if(type == Type.R){
+            Debug.LogError("The Write Operation is Limited");
+            return;
         }
+
+        StreamWriter sw;  
+        sw = fileInfo.AppendText();
 
         foreach(string str in strInfo)
             sw.WriteLine(str);  
@@ -54,23 +74,30 @@ public class FileRW : MonoBehaviour
         sw.Dispose ();//文件流释放  
     }
 
-    public void OverWriteFileByLine(string filePath,string fileName,string strInfo)  
+    public void OverWriteFileByLine(string strInfo)  
     { 
-        StreamWriter sw;  
-        FileInfo file_info = new FileInfo (filePath+"//"+fileName);  
-        sw = file_info.CreateText();
+        if(type == Type.R){
+            Debug.LogError("The Write Operation is Limited");
+            return;
+        }
+
+        StreamWriter sw;   
+        sw = fileInfo.CreateText();
         sw.WriteLine(strInfo);  
         sw.Close ();  
         sw.Dispose ();//文件流释放  
     }  
 
 
-    public void OverWriteFileByLine(string filePath,string fileName,List<string> strInfo)  
+    public void OverWriteFileByLine(List<string> strInfo)  
     { 
+        if(type == Type.R){
+            Debug.LogError("The Write Operation is Limited");
+            return;
+        }
+
         StreamWriter sw;  
-        FileInfo file_info = new FileInfo (filePath+"//"+fileName);  
-        
-        sw=file_info.CreateText();//创建一个用于写入 UTF-8 编码的文本  
+        sw=fileInfo.CreateText();//创建一个用于写入 UTF-8 编码的文本  
             
         foreach(string str in strInfo)
             sw.WriteLine(str);  
@@ -78,28 +105,29 @@ public class FileRW : MonoBehaviour
         sw.Dispose ();//文件流释放  
     }
 
-    public List<string> ReadFile(string filePath, string fileName,string strInfo)
+    public List<string> ReadFile()
     {
-        StreamReader sr;
+        if(type == Type.W){
+            Debug.LogError("The Read Operation is Limited");
+            return null;
+        }
 
-        FileInfo fileInfo = new FileInfo(filePath + "/" + fileName);
-        if(fileInfo.Exists)  
-        {
-            sr=fileInfo.OpenText();  
-        }  
-        else  
-        {  
-            Debug.LogWarning("Not find files!");  
-            return null;  
-        }  
+        if(!isExist){
+            Debug.LogError("file not found : " + filePath + fileName);
+            return null;
+        }
+
+        StreamReader sr;
+        sr = fileInfo.OpenText();
 
         List<string> list = new List<string>();
         string str;  
-        while((str=sr.ReadLine())!=null)  
-            list.Add(str);//加上str的临时变量是为了避免sr.ReadLine()在一次循环内执行两次  
+        while((str = sr.ReadLine()) != null)  
+            list.Add(str);
         sr.Close ();  
         sr.Dispose ();  
         return list;
+
     }
 
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpeedCube : MonoBehaviour
 {
-    private GameObject speedCube;
+    //private GameObject speedCube;
 
     [Tooltip("加速块提供的动力大小"), SerializeField]
     private float speedUpForce = 20f;
@@ -14,7 +14,7 @@ public class SpeedCube : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        speedCube = GameObject.FindGameObjectWithTag("AccelerationBlock");
+        //speedCube = GameObject.FindGameObjectWithTag("AccelerationBlock");
     }
 
     // Update is called once per frame
@@ -33,7 +33,7 @@ public class SpeedCube : MonoBehaviour
     /// </param>
     void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "mfpp")
+        if (other.gameObject.tag == "Player")
         {
             Debug.Log("发生碰撞：-------------------------------------------");
 
