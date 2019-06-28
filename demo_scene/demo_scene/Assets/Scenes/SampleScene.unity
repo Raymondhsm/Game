@@ -142,12 +142,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9828c7d74f741f248b1d4f66a30e540a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextObject: {fileID: 1001778687}
-  time: 20
-  i: 0
-  correction: 0
-  _collider: {fileID: 0}
-  displacement: {x: 0, y: 0, z: 0}
 --- !u!65 &40137296
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -485,6 +479,27 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &125754796 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7011247142156912570, guid: b376aa3dd72e0a4408cd084288337970,
+    type: 3}
+  m_PrefabInstance: {fileID: 1758655593}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &125754798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125754796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2710a0b3dadd54147967f08c3faff073, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShakeTime: 0.5
+  ShakeAmount: 5
+  ShakeSpeed: 1
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -32477,9 +32492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c81e50a21d2df4c982caf387ca9971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedCube: {fileID: 0}
-  speedUpForce: 20
-  accuracy: 0.2
 --- !u!1001 &1758655593
 PrefabInstance:
   m_ObjectHideFlags: 0

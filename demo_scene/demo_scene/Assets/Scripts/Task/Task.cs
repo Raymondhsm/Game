@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Task : MonoBehaviour 
 {
-    private enum statusType {NotStart, OnGoing, Finished};
+    public enum statusType {NotStart, OnGoing, Finished};
 
-    private int status;
-    public int Status 
+    private statusType status;
+    public statusType Status 
     {
         set { status = value; }
         get { return status; }
@@ -26,8 +26,8 @@ public class Task : MonoBehaviour
         get { return currTaskNodeNum; }
     }
 
-    private ArrayList taskNodeList;
-    public ArrayList TaskNodeList
+    private List<TaskNode> taskNodeList;
+    public List<TaskNode> TaskNodeList
     {
         set { taskNodeList = value; }
         get { return taskNodeList; }
@@ -67,7 +67,7 @@ public class Task : MonoBehaviour
         currTaskNodeIndex = 0;
         currLayer = 0;
 
-        taskNodeList = new ArrayList();
+        taskNodeList = new List<TaskNode>();
     }
 
     void Update()
@@ -75,13 +75,45 @@ public class Task : MonoBehaviour
         
     }
 
+    ~Task()
+    {
+        //如果任务不是进行中，不用保存进度
+        if(this.Status != statusType.OnGoing) return;
+
+        //保存进度
+        Dictionary<string,OnGoingTask> dogt = taskManager.getTaskSchedule();
+
+        //如果任务进度存在，改写
+        if(dogt.ContainsKey(taskName))
+        {
+            dogt[taskName].taskNodeIndex = currTaskNodeIndex;
+            dogt[taskName].taskNodeNum = currTaskNodeNum;
+            dogt[taskName].taskNodeLayer = currLayer;
+        }
+        else        //如果任务进度不存在，添加
+        {
+            OnGoingTask o = new OnGoingTask();
+            o.taskName = taskName;
+            o.taskNodeIndex = currTaskNodeIndex;
+            o.taskNodeNum = CurrTaskNodeNum;
+            o.taskNodeLayer = CurrLayer;
+
+            dogt.Add(taskName,o);
+        }
+    }
+
     public bool StartTask(){
-        Debug.Log(TaskNodeNum);
+        //如果任务节点为零，则返回
         if(TaskNodeNum == 0 )return false;
 
-        status = (int)statusType.OnGoing;
+        //设置任务状态
+        status = statusType.OnGoing;
 
-        NextTaskNode();
+        //如果任务没有进度读取，开始寻找下一个节点
+        if(currLayer == 0) NextTaskNode();
+
+        //激活任务节点
+        ActiveTaskNode();
 
         return true;
     }
@@ -101,7 +133,7 @@ public class Task : MonoBehaviour
         int index = -1;
         TaskNode m_tn;
         for(int i=0; i<TaskNodeNum; i++){
-            m_tn = taskNodeList[i] as TaskNode;
+            m_tn = taskNodeList[i];
             if(m_tn.layer > tn.layer){
                 index = i;
                 break;
@@ -131,7 +163,7 @@ public class Task : MonoBehaviour
     {
         TaskNode tn;
         for(int i=currTaskNodeIndex; i<currTaskNodeIndex + currTaskNodeNum; i++){
-            tn = taskNodeList[i] as TaskNode;
+            tn = taskNodeList[i] ;
             if(!tn.IsFinished) return false;
         }
 
@@ -143,18 +175,19 @@ public class Task : MonoBehaviour
     {
         TaskNode tn;
         for(int i=0; i<TaskNodeNum; i++){
-            tn = taskNodeList[i] as TaskNode;
+            tn = taskNodeList[i] ;
             if(tn.TaskNodeName ==  name) return tn;
         }
 
         return null;
     }
 
+    //返回当前被激活的任务节点
     public TaskNode[] getCurrentTaskNode()
     {
         TaskNode[] re = new TaskNode[currTaskNodeNum];
         for(int i=0; i<currTaskNodeNum; i++){
-            re[i] = taskNodeList[currTaskNodeIndex + i] as TaskNode;
+            re[i] = taskNodeList[currTaskNodeIndex + i] ;
         }
         return re;
     }
@@ -164,9 +197,10 @@ public class Task : MonoBehaviour
     {
         Debug.Log("next node");
 
+        //如果当前为最后一层节点,则任务完成
         currTaskNodeIndex += currTaskNodeNum;
         if(currTaskNodeIndex >= TaskNodeNum) {
-            status = (int)statusType.Finished;
+            status = statusType.Finished;
             FinishedTask();
             return;
         }
@@ -174,34 +208,40 @@ public class Task : MonoBehaviour
         //find the number of enable taskNode 
         currTaskNodeNum = 1;
 
+        //寻找下一层的任务节点
         TaskNode currNode, nextNode;
         int index;
         while(true){
             index = currTaskNodeIndex + currTaskNodeNum - 1;
             if(index >= TaskNodeNum - 1) break;
 
-            currNode = taskNodeList[index] as TaskNode;
-            nextNode = taskNodeList[index+1] as TaskNode;
+            currNode = taskNodeList[index] ;
+            nextNode = taskNodeList[index+1] ;
 
             if(currNode.layer != nextNode.layer) break;
             
             currTaskNodeNum++;
         }
         currLayer++;
+       
+    }
 
+    public void ActiveTaskNode()
+    { 
         //激活任务节点
         TaskNode tn;
         for(int i=currTaskNodeIndex; i<currTaskNodeIndex + currTaskNodeNum; i++){
-            tn = taskNodeList[i] as TaskNode;
+            tn = taskNodeList[i] ;
             tn.IsEnable = true;
         }
     }
 
+    //任务完成事件函数
     private void FinishedTask()
     {
         Debug.Log("finishTask");
 
-        this.status = (int)statusType.Finished;
+        this.status = statusType.Finished;
         taskManager.RespondTask(this.TaskName);
 
         Destroy(gameObject);

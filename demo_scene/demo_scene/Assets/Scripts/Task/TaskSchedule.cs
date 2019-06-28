@@ -17,7 +17,7 @@ public class TaskSchedule : MonoBehaviour
         set { fileName = value; }
     }
 
-    public void ReadTaskSchedule(List<string> notStart, Hashtable OnGoing, List<string> finished, List<string> taskList)
+    public void ReadTaskSchedule(List<string> notStart, Dictionary<string,OnGoingTask> OnGoing, List<string> finished, List<string> taskList)
     {
         FileRW file = new FileRW(filePath,fileName,FileRW.Type.R);
         List<string> data = file.ReadFile();
@@ -93,7 +93,7 @@ public class TaskSchedule : MonoBehaviour
         }
     }
 
-    public void WriteTaskSchedule(List<string> notStart, Hashtable OnGoing, List<string> finished)
+    public void WriteTaskSchedule(List<string> notStart, Dictionary<string,OnGoingTask> OnGoing, List<string> finished)
     {
         FileRW file = new FileRW(filePath,fileName,FileRW.Type.W);
 
@@ -105,18 +105,20 @@ public class TaskSchedule : MonoBehaviour
         data.Add("");
         
         data.Add("#OnGoing");
-        foreach(Task ta in OnGoing)
+        foreach(OnGoingTask ta in OnGoing.Values)
         {
-            data.Add(ta.TaskName);
-            data.Add(ta.CurrTaskNodeIndex.ToString());
-            data.Add(ta.CurrTaskNodeNum.ToString());
-            data.Add(ta.CurrLayer.ToString());
+            data.Add(ta.taskName);
+            data.Add(ta.taskNodeIndex.ToString());
+            data.Add(ta.taskNodeNum.ToString());
+            data.Add(ta.taskNodeLayer.ToString());
         }
         data.Add("");
 
         data.Add("#Finished");
         foreach(string na in finished)
             data.Add("na");
+
+        file.OverWriteFileByLine(data);
     }
 }
 

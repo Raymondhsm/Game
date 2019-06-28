@@ -38,12 +38,14 @@ public class TaskNode : MonoBehaviour
     void Awake()
     {
         Debug.Log("tn Start");
+        //初始化
         parent = gameObject.GetComponentInParent<Task>();
         isEnable = false;
         isFinished = false;
         parent.addTaskNode(this);
     }
 
+    //任务节点触发函数
     void OnTriggerEnter(Collider collider){
         Debug.Log(isEnable);
         if(!isEnable) return;
